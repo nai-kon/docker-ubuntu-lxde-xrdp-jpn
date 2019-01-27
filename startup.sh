@@ -19,7 +19,12 @@ echo "USER_ID: $USER_ID"
 if [[ $USER_ID != "0" && ! $(getent passwd $USER) ]]; then
     export HOME=/home/$USER
     useradd -d ${HOME} -m -s /bin/bash -u $USER_ID -g $GROUP_ID $USER
+    
 fi
+
+# Set mozc-jp to IBUS preload-engine
+# gsettings set org.freedesktop.ibus.general preload-engines "['mozc-jp']"
+
 
 # Revert permissions
 sudo chmod u-s /usr/sbin/useradd
@@ -48,4 +53,4 @@ fi
 unset PASSWD
 
 echo "#############################"
-exec "$@"
+

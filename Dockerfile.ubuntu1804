@@ -9,10 +9,8 @@ RUN apt-get update \
       lxde \
       xrdp \
       ibus ibus-mozc \
-      language-pack-ja-base \
-      language-pack-ja \
-      fonts-ipafont-gothic \
-      fonts-ipafont-mincho \
+      language-pack-ja-base language-pack-ja \
+      fonts-ipafont-gothic fonts-ipafont-mincho \
       supervisor \
       gosu \
       openssh-server \
@@ -42,8 +40,9 @@ RUN echo "ALL ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/ALL
 RUN chmod u+s /usr/sbin/useradd \
     && chmod u+s /usr/sbin/groupadd
 
-# Expose SSH port
+# sshd setting
 EXPOSE 22
+RUN mkdir -p /var/run/sshd
 
 # Expose RDP port
 EXPOSE 3389
@@ -52,7 +51,7 @@ RUN echo "startlxde" > /etc/skel/.xsession \
     && install -o root -g xrdp -m 2775 -d /var/run/xrdp \
     && install -o root -g xrdp -m 3777 -d /var/run/xrdp/sockdir
 
-# Set supervisord conf for xrdp service
+# Set supervisord conf for xrdp and sshd service
 RUN { \
       echo "[supervisord]"; \
       echo "user=root"; \
@@ -64,10 +63,12 @@ RUN { \
       echo "[program:xrdp]"; \
       echo "command=/usr/sbin/xrdp --nodaemon"; \
       echo "user=xrdp"; \
-    } > /etc/supervisor/xrdp.conf
+      echo "[program:sshd]"; \
+      echo "command=/usr/sbin/sshd -D"; \
+    } > /etc/supervisor/conf.d/supervisord.conf
 
 # Copy entrypoint script
 COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 ENTRYPOINT ["startup.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/xrdp.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
