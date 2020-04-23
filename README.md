@@ -6,9 +6,9 @@
 
 ### Features
   
-- Ubuntu18.04 Desktop with Japanese language pack
-- build in xrdp server
-- build in ssh server
+- Ubuntu18.04 desktop with Japanese language pack
+- xrdp server
+- ssh server
 
 ### Usage
 
@@ -25,6 +25,6 @@
     -e USER=LOGINUSER -e PASSWD=LOGINPW \ # xrdp login user/pw
     --shm-size=1g
 
-  - access to TARGETIP:3389 on RDP client
+  - access to (TARGETIP):3389 using RDP client software
   ```
   
